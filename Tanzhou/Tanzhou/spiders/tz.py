@@ -3,10 +3,11 @@ import time
 import scrapy
 from Tanzhou.items import TanzhouItem
 
+
 class TzSpider(scrapy.Spider):
-    name = 'tz' #爬虫名字
-    allowed_domains = ['tanzhouedu.com'] #限制爬虫范围
-    start_urls = ['http://www.tanzhouedu.com/mall/course/initAllCourse'] #请求url的第一个链接
+    name = 'tz'  # 爬虫名字
+    allowed_domains = ['tanzhouedu.com']  # 限制爬虫范围
+    start_urls = ['http://www.tanzhouedu.com/mall/course/initAllCourse']  # 请求url的第一个链接
     offset = 0
 
     def parse(self, response):
@@ -19,5 +20,6 @@ class TzSpider(scrapy.Spider):
         if not node_list:
             return
         self.offset += 20
-        yield scrapy.Request(url="http://www.tanzhouedu.com/mall/course/initAllCourse?params.offset="+str(self.offset)+"&params.num=20&keyword=&_="+str(int(time.time()*1000)), callback=self.parse)
-        #url会被传送给Scheduler【调度器】整理入列
+        yield scrapy.Request(url="http://www.tanzhouedu.com/mall/course/initAllCourse?params.offset=" + str(
+            self.offset) + "&params.num=20&keyword=&_=" + str(int(time.time() * 1000)), callback=self.parse)
+        # url会被传送给Scheduler【调度器】整理入列

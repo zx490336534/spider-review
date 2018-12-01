@@ -11,7 +11,7 @@ import scrapy
 class TanzhouItem(scrapy.Item):
     # define the fields for your item here like:
     # name = scrapy.Field()
-    #课程金额
+    # 课程金额
     money = scrapy.Field()
-    #课程名字
+    # 课程名字
     title = scrapy.Field()
