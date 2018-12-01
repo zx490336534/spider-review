@@ -21,6 +21,8 @@ class TencentItem(scrapy.Item):
     work_location = scrapy.Field()
     #招聘时间
     publish_times = scrapy.Field()
+
+class DetailItem(scrapy.Item):
     #工作职责
     position_zhize = scrapy.Field()
     #工作要求

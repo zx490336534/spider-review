@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import scrapy
-from TenCent.items import TencentItem
+from TenCent.items import TencentItem,DetailItem
 
 
 class TcSpider(scrapy.Spider):
@@ -21,11 +21,12 @@ class TcSpider(scrapy.Spider):
             item['people_number'] = node.xpath("./td[3]/text()").extract_first()
             item['work_location'] = node.xpath("./td[4]/text()").extract_first()
             item['publish_times'] = node.xpath("./td[5]/text()").extract_first()
-            yield scrapy.Request(url=self.base_url+item['position_link'],callback=self.detail,meta={'item':item})
+            yield item
+            yield scrapy.Request(url=self.base_url+item['position_link'],callback=self.parse_detail)
         yield scrapy.Request(url=self.base_url+next_page,callback=self.parse)
 
-    def detail(self,response):
-        item = response.meta["item"]
+    def parse_detail(self,response):
+        item = DetailItem()
         item['position_zhize'] = "".join(response.xpath('//ul[@class="squareli"]')[0].xpath("./li/text()").extract())
         item['position_yaoqiu'] = "".join(response.xpath('//ul[@class="squareli"]')[1].xpath("./li/text()").extract())
         yield item
