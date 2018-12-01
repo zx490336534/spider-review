@@ -1,3 +1,13 @@
+import logging
+import warnings
+
+from scrapy import signals
+from scrapy.http import Request
+from scrapy.utils.trackref import object_ref
+from scrapy.utils.url import url_is_from_spider
+from scrapy.utils.deprecate import create_deprecated_class
+from scrapy.exceptions import ScrapyDeprecationWarning
+from scrapy.utils.deprecate import method_is_overridden
 #所有爬虫的基类，用户定义的爬虫必须从这个类继承
 class Spider(object_ref):
 
@@ -23,7 +33,7 @@ class Spider(object_ref):
 
     # 打印Scrapy执行后的log信息
     def log(self, message, level=log.DEBUG, **kw):
-        log.msg(message, spider=self, level=level, **kw)
+        self.logger.log(message, spider=self, level=level, **kw)
 
     # 判断对象object的属性是否存在，不存在做断言处理
     def set_crawler(self, crawler):
@@ -57,7 +67,7 @@ class Spider(object_ref):
 
     @classmethod
     def handles_request(cls, request):
-        return url_is_from_spider(1.url, cls)
+        return url_is_from_spider(request.url, cls)
 
     def __str__(self):
         return "<%s %r at 0x%0x>" % (type(self).__name__, self.name, id(self))
