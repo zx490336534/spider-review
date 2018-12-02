@@ -1,17 +1,23 @@
 # -*- coding: utf-8 -*-
+import re
+
 import scrapy
 from qc.items import QcItem
+from urllib import parse
 
 
 class A51Spider(scrapy.Spider):
     name = 'a51'
-    allowed_domains = ['51job.com']
+    allowed_domains = ['search.51job.com', 'jobs.51job.com']
     offset = 1
-    base_url = 'https://search.51job.com/list/080200,000000,0000,00,9,99,python,2,'
+    keyword = ' '
+    keyword_urlcode = parse.quote(parse.quote(keyword))
+    base_url = 'https://search.51job.com/list/000000,000000,0000,00,9,99,%s,2,' % keyword_urlcode
     start_urls = [base_url + '1.html']
 
     def parse(self, response):
         node_list = response.xpath('//div[@class="el"]')
+        page_info = response.xpath('//*[@id="resultList"]/div/div/div/div/span/text()').extract_first()
         for node in node_list:
             item = QcItem()
             item['work_name'] = node.xpath('./p/span/a/@title').extract_first()
@@ -23,11 +29,11 @@ class A51Spider(scrapy.Spider):
             if not detail_href:
                 continue
             yield scrapy.Request(detail_href, callback=self.detail, meta={"item": item})
-        if not node_list:
-            return
-        self.offset += 1
-        url = self.base_url + str(self.offset) + '.html'
-        yield scrapy.Request(url, callback=self.parse)
+        if self.offset <= int(re.findall(r'共(.*?)页', page_info)[0]):
+            print('当前正在爬取%s岗位的第' % self.keyword, self.offset, '页...')
+            self.offset += 1
+            url = self.base_url + str(self.offset) + '.html'
+            yield scrapy.Request(url, callback=self.parse)
 
     def detail(self, response):
         item = response.meta['item']
