@@ -30,8 +30,8 @@ class SeleniumMiddleware(object):
         chrome_options.add_argument('--headless')
         chromedriver = "/home/zx/chrome_driver/chromedriver"
         os.environ["webdriver.chrome.driver"] = chromedriver
-        self.driver = webdriver.Chrome(chrome_options=chrome_options,executable_path=chromedriver)
         if request.url != 'https://www.aqistudy.cn/historydata/':
+            self.driver = webdriver.Chrome(chrome_options=chrome_options, executable_path=chromedriver)
             self.driver.get(request.url)
             time.sleep(2)
             html = self.driver.page_source
